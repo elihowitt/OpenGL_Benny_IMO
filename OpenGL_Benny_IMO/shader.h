@@ -7,6 +7,7 @@
 #include<iostream>
 #include<fstream>
 #include<GL/glew.h>
+#include"transform.h"
 
 class Shader
 {
@@ -14,8 +15,9 @@ public:
 	Shader(const std::string& filename);
 
 	void Bind();
-	std::string LoadShader(const std::string& filename);
-
+	void Update(const Transform& transform);
+	std::string LoadShader(const std::string& filename);///
+	
 	virtual ~Shader();
 protected:
 private:
@@ -23,8 +25,16 @@ private:
 	Shader(const Shader& other){}
 	Shader& operator=(const Shader& other){}
 
+	enum
+	{
+		TRANSFORM_U,
+
+		NUM_UNIFORMS
+	};
+
 	GLuint m_program;
 	GLuint m_shaders[NUM_SHADERS];
+	GLuint m_uniforms[NUM_UNIFORMS];
 };
 
 #endif
