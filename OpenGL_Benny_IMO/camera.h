@@ -21,6 +21,11 @@ public:
 	{
 		return m_perspective * glm::lookAt(m_position, m_position + m_forward, m_up);
 	}
+
+	glm::mat4& GetPerspective() { return m_perspective; }
+	glm::vec3& GetPosition() { return m_position; }
+	glm::vec3& GetForward() { return m_forward; }
+	glm::vec3& GetUp() { return m_up; }
 protected:
 private:
 	glm::mat4 m_perspective;

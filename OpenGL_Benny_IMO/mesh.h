@@ -17,6 +17,10 @@ public:
 	inline glm::vec2* GetTexCoord() { return &texCoord; }
 	inline glm::vec3* GetNormal() { return &normal; }
 
+	inline void SetPos(glm::vec3 Apos) { pos = Apos; }
+	inline void SetTexCoord(glm::vec2 tex) { texCoord = tex; }
+	inline void SetNormal(glm::vec3 nor) { normal = nor; }
+
 protected:
 private:
 	glm::vec3 pos;
