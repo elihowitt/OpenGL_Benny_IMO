@@ -29,7 +29,9 @@ private:
 
 	enum
 	{
-		TRANSFORM_U,
+		MODEL_U,
+		VIEWANDPROJECTION_U,
+		NORMALMAT_U,
 
 		NUM_UNIFORMS
 	};
