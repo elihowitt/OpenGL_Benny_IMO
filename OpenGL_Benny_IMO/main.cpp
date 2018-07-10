@@ -33,67 +33,62 @@ int main(int argc, char**argv)
 	Texture texture("./res/bricks.jpg");
 	Texture textureRed("./res/red texture.jpg");
 	Camera camera(glm::vec3(0,0,-3), 70.0f, (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
-	Transform transform(pos, rot);
+	Transform transform;
 
 	float speed = 0.004;
-	float turnFactor = 2;
-	float turnCountX = 0.0;
-	float turnCountY = 0.0;
+	float turnFactor = 0.5;
+
+	POINT mouseCur, mousePrev,mouseDelta;
+	mouseCur.x = 0.0, mouseCur.y = 0.0;
+	GetCursorPos(&mousePrev);
 
 	float temp;
 	while (!display.IsClosed())
 	{
+		mousePrev = mouseCur;
+		GetCursorPos(&mouseCur);
+		mouseDelta.x = mouseCur.x - mousePrev.x;
+		mouseDelta.y = mouseCur.y - mousePrev.y;
+
 		display.Clear((42 / 255.0), (120 / 255.0), (99 / 255.0), 0.9);
 
 		shader.Bind();
 		texture.Bind(0);
 		shader.Update(transform, camera);
 
-		if (GetAsyncKeyState('A'))
-			transform.GetPos().x -= speed;
-		if (GetAsyncKeyState('D'))
-			transform.GetPos().x += speed;
+	//	if (GetAsyncKeyState('A'))
+	//		transform.GetPos().x -= speed;
+	//	if (GetAsyncKeyState('D'))
+	//		transform.GetPos().x += speed;
 		if (GetAsyncKeyState('W'))
-			transform.GetPos().z -= speed;
+			camera.GetPosition() += camera.GetForward()*speed;
 		if (GetAsyncKeyState('S'))
-			transform.GetPos().z += speed;
+			camera.GetPosition() -= camera.GetForward()*speed;
 		if (GetAsyncKeyState(VK_SHIFT))
-			transform.GetPos().y -= speed;
+			camera.GetPosition() += camera.GetUp()*speed;
 		if (GetAsyncKeyState(VK_CONTROL))
-			transform.GetPos().y += speed;
-		
-		if (GetAsyncKeyState(VK_LEFT))		
-			turnCountX = speed * turnFactor;		
-		else if (GetAsyncKeyState(VK_RIGHT))
-			turnCountX = -speed*turnFactor;
-		else turnCountX = 0.0;
-		
-		if (GetAsyncKeyState(VK_UP))
-			turnCountY = speed*turnFactor;
-		else if (GetAsyncKeyState(VK_DOWN))
-			turnCountY = -speed*turnFactor;
-		else turnCountY = 0.0;
-
+			camera.GetPosition() -= camera.GetUp()*speed;
+	
 		if (GetAsyncKeyState('Q'))
 			transform.GetScale() = glm::vec3(5, 5, 5);
 		else transform.GetScale() = glm::vec3(1, 1, 1);
 
-		//Around Y.
-		temp = camera.GetForward().x;
-		camera.GetForward().x = camera.GetForward().z*sin(turnCountX) + temp * cos(turnCountX);
-		camera.GetForward().z = camera.GetForward().z*cos(turnCountX) - temp * sin(turnCountX);
+		//if (GetAsyncKeyState('E'))
+		//{
+			camera.Yaw(mouseDelta.x *turnFactor);
+			camera.Pitch(-mouseDelta.y *turnFactor);
+		//}
 
-		//Around X.
-		temp = camera.GetForward().z;
-		camera.GetForward().z = camera.GetForward().y*sin(turnCountY) + temp * cos(turnCountY);
-		camera.GetForward().y = camera.GetForward().y*cos(turnCountY) - temp * sin(turnCountY);
-		
 		triangle.Draw();
-		textureRed.Bind(0);
+		//textureRed.Bind(0);
 		mesh.Draw();
-
 		display.Update();
 
+		if (GetAsyncKeyState('I'))
+		{
+			std::cout << "Forward: (" << camera.GetForward().x << ',' << camera.GetForward().y << ',' << camera.GetForward().z << ")\n";
+			std::cout << "Up: (" << camera.GetUp().x << ',' << camera.GetUp().y << ',' << camera.GetUp().z << ")\n";
+		}
 	}
 
 	return 0;
