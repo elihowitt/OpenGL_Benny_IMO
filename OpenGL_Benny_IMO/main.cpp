@@ -1,5 +1,6 @@
 #include<iostream>
-	#include<Windows.h>
+#include<Windows.h>
+#include<ctime>
 #include<GL/glew.h>
 
 #include"display.h"
@@ -8,16 +9,19 @@
 #include"texture.h"
 #include"transform.h"
 #include"camera.h"
+#include"terrian.h"
 
 #define WIDTH 800
 #define HEIGHT 600
 
 int main(int argc, char**argv)
 {
+	srand(time(NULL));
+	rand();
+	
 	Display display(WIDTH, HEIGHT, "Hello world");
 
-	///Terrian terrian(TERRIAN_SHAPE_PERLIN);
-	///terrian.Colour(TERRIAN_COLOUR_BYAXI_Y);
+	Terrian terrian(100, 100, 0.3, Terrian::TERRIAN_SHAPE_FLAT);
 
 	Vertex vertices[] =
 	{ Vertex(glm::vec3(-0.5,-0.5,0), glm::vec2(0.0,0.0), glm::vec3(0,0,1)),
@@ -33,7 +37,7 @@ int main(int argc, char**argv)
 	Mesh mesh("./res/monkey3.txt");
 	Shader shader("./res/basicShader");
 	Shader shaderByHieght("./res/shader by height");
-	Texture texture("./res/bricks.jpg");
+	Texture texture("./res/Machpod_choice.jpg");
 	Texture textureRed("./res/red texture.jpg");
 	Camera camera(glm::vec3(0,0,-3), 70.0f, (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
 	Transform transform;
@@ -93,13 +97,14 @@ int main(int argc, char**argv)
 		camera.Pitch(-mouseDelta.y *turnFactor);
 		
 		lightVec.x = sinf(counter);
+		lightVec.y = cosf(counter);
 		counter += 0.005;
 
-		///terrian.Draw();
-
-		triangle.Draw();
 		//textureRed.Bind(0);
-		mesh.Draw();
+		terrian.Draw();
+
+		//triangle.Draw();
+		//mesh.Draw();
 		display.Update();
 
 		
