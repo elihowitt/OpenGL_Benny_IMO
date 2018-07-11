@@ -1,0 +1,16 @@
+#version 140
+
+varying vec3 finalPos;
+varying vec3 normal0;
+
+uniform sampler2D diffuse;
+uniform vec3 lightVec;
+
+void main()
+{
+	gl_FragColor = vec4(finalPos,0)
+	* clamp(dot(-lightVec, normal0), 0.0, 1.0) 
+	;
+
+	//This is : colour = [colour by height] * (a val from 0 til 1[the dot-product of the light & face-normal vectors(both need to be normalized)])
+}

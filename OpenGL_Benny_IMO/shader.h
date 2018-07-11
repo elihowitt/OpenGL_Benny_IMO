@@ -17,7 +17,8 @@ public:
 	Shader(const std::string& filename);
 
 	void Bind();
-	void Update(const Transform& transform, const Camera& camera);
+	void Update(const Transform& transform, const Camera& cameraconst, const glm::vec3& light);
+	///void Update(const Transform& transform, const Camera& cameraconst ,const glm::vec3& light);
 	std::string LoadShader(const std::string& filename);///
 	
 	virtual ~Shader();
@@ -32,6 +33,7 @@ private:
 		MODEL_U,
 		VIEWANDPROJECTION_U,
 		NORMALMAT_U,
+		LIGHTVEC_U,
 
 		NUM_UNIFORMS
 	};

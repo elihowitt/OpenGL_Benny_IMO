@@ -16,6 +16,8 @@ int main(int argc, char**argv)
 {
 	Display display(WIDTH, HEIGHT, "Hello world");
 
+	///Terrian terrian(TERRIAN_SHAPE_PERLIN);
+	///terrian.Colour(TERRIAN_COLOUR_BYAXI_Y);
 
 	Vertex vertices[] =
 	{ Vertex(glm::vec3(-0.5,-0.5,0), glm::vec2(0.0,0.0), glm::vec3(0,0,1)),
@@ -30,6 +32,7 @@ int main(int argc, char**argv)
 	Mesh triangle(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
 	Mesh mesh("./res/monkey3.txt");
 	Shader shader("./res/basicShader");
+	Shader shaderByHieght("./res/shader by height");
 	Texture texture("./res/bricks.jpg");
 	Texture textureRed("./res/red texture.jpg");
 	Camera camera(glm::vec3(0,0,-3), 70.0f, (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
@@ -38,9 +41,13 @@ int main(int argc, char**argv)
 	float speed = 0.004;
 	float turnFactor = 0.5;
 
+	float counter = 0.0;
+
 	POINT mouseCur, mousePrev,mouseDelta;
 	mouseCur.x = 0.0, mouseCur.y = 0.0;
 	GetCursorPos(&mousePrev);
+
+	glm::vec3 lightVec(glm::normalize(glm::vec3(0.75, 0.75,- 0.75)));
 
 	float temp;
 	while (!display.IsClosed())
@@ -52,14 +59,23 @@ int main(int argc, char**argv)
 
 		display.Clear((42 / 255.0), (120 / 255.0), (99 / 255.0), 0.9);
 
-		shader.Bind();
 		texture.Bind(0);
-		shader.Update(transform, camera);
+		
+		if (GetAsyncKeyState(VK_SPACE))
+		{
+			shader.Bind();
+			shader.Update(transform, camera, lightVec);
+		}
+		else
+		{
+			shaderByHieght.Bind();
+			shaderByHieght.Update(transform, camera, lightVec);
+		}
 
-	//	if (GetAsyncKeyState('A'))
-	//		transform.GetPos().x -= speed;
-	//	if (GetAsyncKeyState('D'))
-	//		transform.GetPos().x += speed;
+		if (GetAsyncKeyState('A'))
+			camera.GetPosition() -= glm::normalize(glm::cross(camera.GetForward(), camera.GetUp())) * speed;
+		if (GetAsyncKeyState('D'))																  
+			camera.GetPosition() += glm::normalize(glm::cross(camera.GetForward(), camera.GetUp())) * speed;
 		if (GetAsyncKeyState('W'))
 			camera.GetPosition() += camera.GetForward()*speed;
 		if (GetAsyncKeyState('S'))
@@ -73,22 +89,20 @@ int main(int argc, char**argv)
 			transform.GetScale() = glm::vec3(5, 5, 5);
 		else transform.GetScale() = glm::vec3(1, 1, 1);
 
-		//if (GetAsyncKeyState('E'))
-		//{
-			camera.Yaw(mouseDelta.x *turnFactor);
-			camera.Pitch(-mouseDelta.y *turnFactor);
-		//}
+		camera.Yaw(mouseDelta.x *turnFactor);
+		camera.Pitch(-mouseDelta.y *turnFactor);
+		
+		lightVec.x = sinf(counter);
+		counter += 0.005;
+
+		///terrian.Draw();
 
 		triangle.Draw();
 		//textureRed.Bind(0);
 		mesh.Draw();
 		display.Update();
 
-		if (GetAsyncKeyState('I'))
-		{
-			std::cout << "Forward: (" << camera.GetForward().x << ',' << camera.GetForward().y << ',' << camera.GetForward().z << ")\n";
-			std::cout << "Up: (" << camera.GetUp().x << ',' << camera.GetUp().y << ',' << camera.GetUp().z << ")\n";
-		}
+		
 	}
 
 	return 0;

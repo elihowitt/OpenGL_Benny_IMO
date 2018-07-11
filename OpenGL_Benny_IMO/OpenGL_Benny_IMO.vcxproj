@@ -34,12 +34,15 @@
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="terrian.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="res\basicShader.fs.txt" />
     <Text Include="res\basicShader.vs.txt" />
+    <Text Include="res\shader by height.fs.txt" />
+    <Text Include="res\shader by height.vs.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

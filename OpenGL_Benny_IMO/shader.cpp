@@ -26,6 +26,7 @@ Shader::Shader(const std::string& filename)
 	m_uniforms[MODEL_U] = glGetUniformLocation(m_program, "model");
 	m_uniforms[VIEWANDPROJECTION_U] = glGetUniformLocation(m_program, "viewAndProjection");
 	m_uniforms[NORMALMAT_U] = glGetUniformLocation(m_program, "normalMatrix");
+	m_uniforms[LIGHTVEC_U] = glGetUniformLocation(m_program, "lightVec");
 }
 
 Shader::~Shader()
@@ -109,20 +110,15 @@ void Shader::Bind()
 	glUseProgram(m_program);
 }
 
-//void Shader::Update(const Transform& transform, const Camera& camera)
-//{
-//	glm::mat4 model = transform.GetModel();
-//
-//	glUniformMatrix4fv(m_uniforms[TRANSFORM_U], 1, GL_FALSE, &model[0][0]);
-//}
-
-void Shader::Update(const Transform& transform, const Camera& camera)
+void Shader::Update(const Transform& transform, const Camera& camera, const glm::vec3& light = glm::vec3(0,0,1))
 {
 	glm::mat4 model = transform.GetModel();
 	glm::mat4 viewAndProjection = camera.GetViewProjection();
 	glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(model)));
+	glm::vec3 lightVec = light;	
 
 	glUniformMatrix4fv(m_uniforms[MODEL_U], 1, GL_FALSE, &model[0][0]);
 	glUniformMatrix4fv(m_uniforms[VIEWANDPROJECTION_U], 1, GL_FALSE, &viewAndProjection[0][0]);
 	glUniformMatrix3fv(m_uniforms[NORMALMAT_U], 1, GL_FALSE, &normalMatrix[0][0]);
+	glUniform3fv(m_uniforms[LIGHTVEC_U], 1, &lightVec[0]);
 }
