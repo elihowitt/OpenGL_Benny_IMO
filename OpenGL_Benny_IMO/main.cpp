@@ -14,14 +14,22 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+const int TERR_LEN = 10;
+const float TERR_DIS = 1;
+
+const float PLAYER_HEIGHT = 5;
+
 int main(int argc, char**argv)
 {
 	srand(time(NULL));
-	rand();
+	std::cout<<rand();
 	
 	Display display(WIDTH, HEIGHT, "Hello world");
 
-	Terrian terrian(100, 100, 0.3, Terrian::TERRIAN_SHAPE_FLAT);
+	std::vector<Terrian> worldTerrian;// (20, 20, 5, Terrian::TERRIAN_SHAPE_FLAT);
+	for (int y = 1; y <= 1; y++)
+		for (int x = 1; x <= 1; x++)
+			worldTerrian.push_back(Terrian(x*TERR_LEN, y*TERR_LEN));
 
 	Vertex vertices[] =
 	{ Vertex(glm::vec3(-0.5,-0.5,0), glm::vec2(0.0,0.0), glm::vec3(0,0,1)),
@@ -33,16 +41,21 @@ int main(int argc, char**argv)
 	glm::vec3 pos(0, 0, 0);
 	glm::vec3 rot(0, 0, 0);
 
+	
+
 	Mesh triangle(vertices, sizeof(vertices) / sizeof(vertices[0]), indices, sizeof(indices) / sizeof(indices[0]));
-	Mesh mesh("./res/monkey3.txt");
+	Mesh mesh("./res/monkey3.txt"); 
+	Mesh meshStall("./res/stall.obj"); 
 	Shader shader("./res/basicShader");
-	Shader shaderByHieght("./res/shader by height");
+	Shader shaderByHeight("./res/shader by height");
 	Texture texture("./res/Machpod_choice.jpg");
 	Texture textureRed("./res/red texture.jpg");
+	Texture textureStall("./res/stallTexture.png");
+	Texture textureGrass("./res/grass_pattern.jpg");
 	Camera camera(glm::vec3(0,0,-3), 70.0f, (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
 	Transform transform;
 
-	float speed = 0.004;
+	float speed = 0.1;
 	float turnFactor = 0.5;
 
 	float counter = 0.0;
@@ -51,7 +64,7 @@ int main(int argc, char**argv)
 	mouseCur.x = 0.0, mouseCur.y = 0.0;
 	GetCursorPos(&mousePrev);
 
-	glm::vec3 lightVec(glm::normalize(glm::vec3(0.75, 0.75,- 0.75)));
+	glm::vec3 lightVec(glm::normalize(glm::vec3(0.0,- 1,- 0.0)));
 
 	float temp;
 	while (!display.IsClosed())
@@ -65,16 +78,16 @@ int main(int argc, char**argv)
 
 		texture.Bind(0);
 		
-		if (GetAsyncKeyState(VK_SPACE))
-		{
-			shader.Bind();
-			shader.Update(transform, camera, lightVec);
-		}
-		else
-		{
-			shaderByHieght.Bind();
-			shaderByHieght.Update(transform, camera, lightVec);
-		}
+		//if (GetAsyncKeyState(VK_SPACE))
+		//{
+		//	shader.Bind();
+		//	shader.Update(transform, camera, lightVec);
+		//}
+		//else
+		//{
+		//	shaderByHieght.Bind();
+		//	shaderByHieght.Update(transform, camera, lightVec);
+		//}
 
 		if (GetAsyncKeyState('A'))
 			camera.GetPosition() -= glm::normalize(glm::cross(camera.GetForward(), camera.GetUp())) * speed;
@@ -97,17 +110,31 @@ int main(int argc, char**argv)
 		camera.Pitch(-mouseDelta.y *turnFactor);
 		
 		lightVec.x = sinf(counter);
-		lightVec.y = cosf(counter);
+		if (GetAsyncKeyState('U'))
+			lightVec.y = cos(counter);
+		if (GetAsyncKeyState('Y'))
+			std::cout << lightVec.y;
 		counter += 0.005;
 
 		//textureRed.Bind(0);
-		terrian.Draw();
+
+		shader.Bind();
+		shader.Update(transform, camera, lightVec);
+		textureGrass.Bind(0);
+		for (auto i : worldTerrian)
+			i.Draw();
+
+		shaderByHeight.Bind();
+		shaderByHeight.Update(transform, camera, lightVec);
+		
+		//textureStall.Bind(0);
+		//meshStall.Draw();
 
 		//triangle.Draw();
 		//mesh.Draw();
 		display.Update();
 
-		
+		if (camera.GetPosition().y < PLAYER_HEIGHT)camera.GetPosition().y = PLAYER_HEIGHT;
 	}
 
 	return 0;
