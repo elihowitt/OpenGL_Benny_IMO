@@ -21,9 +21,6 @@ const float PLAYER_HEIGHT = 5;
 
 int main(int argc, char**argv)
 {
-	srand(time(NULL));
-	std::cout<<rand();
-	
 	Display display(WIDTH, HEIGHT, "Hello world");
 
 	std::vector<Terrian> worldTerrian;// (20, 20, 5, Terrian::TERRIAN_SHAPE_FLAT);
@@ -61,6 +58,7 @@ int main(int argc, char**argv)
 
 	Camera camera(glm::vec3(0,0,-3), 70.0f, (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
 	Transform transform;
+	Transform transformTree;
 
 	float speed = 0.1;
 	float turnFactor = 0.5;
@@ -75,6 +73,13 @@ int main(int argc, char**argv)
 	glm::vec3 skyVec((42 / 255.0f), (120 / 255.0f), (99 / 255.0f));
 
 	float temp;
+
+	srand(time(NULL));
+
+	glm::vec3 arrTransTree[10];
+	for(int i=0;i<10;i++)
+		arrTransTree[i] = glm::vec3(rand() % 600, 0, rand() % 600);
+
 	while (!display.IsClosed())
 	{
 		mousePrev = mouseCur;
@@ -133,13 +138,18 @@ int main(int argc, char**argv)
 		for (auto i : worldTerrian)
 			i.Draw();
 
+		transformTree.GetPos() = glm::vec3(30, -1, 30);
+
 		shader.Bind();
-		shader.Update(transform, camera, lightVec, skyVec);
+		shader.Update(transformTree, camera, lightVec, skyVec);
 
 		lowPolyTreeTex.Bind(0);
-		//transform.GetPos() += glm::vec3(100, -3, 100);
-		lowpolyTree.Draw();
-		//transform.GetPos() -= glm::vec3(100, -3, 100);
+		for (int i = 0; i < 10; i++)
+		{
+			transformTree.GetPos() = arrTransTree[i];
+			shader.Update(transformTree, camera, lightVec, skyVec);
+			lowpolyTree.Draw();
+		}
 
 		shaderByHeight.Bind();
 		shaderByHeight.Update(transform, camera, lightVec);
