@@ -48,10 +48,17 @@ int main(int argc, char**argv)
 	Mesh meshStall("./res/stall.obj"); 
 	Shader shader("./res/basicShader");
 	Shader shaderByHeight("./res/shader by height");
+
+	Shader terrainShader("./res/terrainShader");
+
 	Texture texture("./res/Machpod_choice.jpg");
 	Texture textureRed("./res/red texture.jpg");
 	Texture textureStall("./res/stallTexture.png");
 	Texture textureGrass("./res/grass_pattern.jpg");
+
+	Mesh lowpolyTree("./res/lowPolyTree.obj");
+	Texture lowPolyTreeTex("./res/lowPolyTree.png");
+
 	Camera camera(glm::vec3(0,0,-3), 70.0f, (float)WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
 	Transform transform;
 
@@ -64,7 +71,8 @@ int main(int argc, char**argv)
 	mouseCur.x = 0.0, mouseCur.y = 0.0;
 	GetCursorPos(&mousePrev);
 
-	glm::vec3 lightVec(glm::normalize(glm::vec3(0.0,- 1,- 0.0)));
+	glm::vec3 lightVec(glm::normalize(glm::vec3(0.0, -1, -0.0)));
+	glm::vec3 skyVec((42 / 255.0f), (120 / 255.0f), (99 / 255.0f));
 
 	float temp;
 	while (!display.IsClosed())
@@ -74,7 +82,7 @@ int main(int argc, char**argv)
 		mouseDelta.x = mouseCur.x - mousePrev.x;
 		mouseDelta.y = mouseCur.y - mousePrev.y;
 
-		display.Clear((42 / 255.0), (120 / 255.0), (99 / 255.0), 0.9);
+		display.Clear(skyVec.x, skyVec.y, skyVec.z, 1.0);
 
 		texture.Bind(0);
 		
@@ -118,11 +126,20 @@ int main(int argc, char**argv)
 
 		//textureRed.Bind(0);
 
-		shader.Bind();
-		shader.Update(transform, camera, lightVec);
+		terrainShader.Bind();
+		terrainShader.Update(transform, camera, lightVec, skyVec);
+
 		textureGrass.Bind(0);
 		for (auto i : worldTerrian)
 			i.Draw();
+
+		shader.Bind();
+		shader.Update(transform, camera, lightVec, skyVec);
+
+		lowPolyTreeTex.Bind(0);
+		//transform.GetPos() += glm::vec3(100, -3, 100);
+		lowpolyTree.Draw();
+		//transform.GetPos() -= glm::vec3(100, -3, 100);
 
 		shaderByHeight.Bind();
 		shaderByHeight.Update(transform, camera, lightVec);

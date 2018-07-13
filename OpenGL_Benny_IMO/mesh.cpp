@@ -34,7 +34,6 @@ void Mesh::Draw()
 {
 	glBindVertexArray(m_vertexArrayObject);
 	
-	//glDrawArrays(GL_TRIANGLES, 0, m_drawCount);
 	glDrawElements(GL_TRIANGLES, m_drawCount, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);

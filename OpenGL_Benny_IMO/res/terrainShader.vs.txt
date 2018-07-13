@@ -23,7 +23,7 @@ void main()
 	vec4 positionRelativeToCam = viewMat * worldPosition;
 	gl_Position = projectionMat * positionRelativeToCam;
 		//gl_Position = viewAndProjection * model * vec4(position, 1.0);
-	texCoord0 = texCoord;// * 40.0;
+	texCoord0 = texCoord * 40.0;
 	normal0  = normalMatrix * normal;
 
 	float distance = length(positionRelativeToCam.xyz);
