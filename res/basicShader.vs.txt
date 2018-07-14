@@ -1,0 +1,32 @@
+#version 140
+
+attribute vec3 position;
+attribute vec2 texCoord;
+attribute vec3 normal;
+
+varying vec2 texCoord0;
+varying vec3 normal0;
+varying float visibility;
+
+uniform mat4 viewAndProjection;
+uniform mat4 viewMat;
+uniform mat4 projectionMat;
+uniform mat4 model;
+uniform mat3 normalMatrix;
+
+const float density = 0.007;// 0.007; //How heavy the fog
+const float gradient = 1;// 1.5;    //How smooth the transition
+
+void main()
+{
+	vec4 worldPosition =  model * vec4(position, 1.0);
+	vec4 positionRelativeToCam = viewMat * worldPosition;
+	gl_Position = projectionMat * positionRelativeToCam;
+		//gl_Position = viewAndProjection * model * vec4(position, 1.0);
+	texCoord0 = texCoord;// * 40.0;
+	normal0  = normalMatrix * normal;
+
+	float distance = length(positionRelativeToCam.xyz);
+	visibility = exp(-pow( (distance* density), gradient));
+	visibility = clamp(visibility, 0.0,1.0);
+}
