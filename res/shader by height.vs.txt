@@ -1,0 +1,19 @@
+#version 140
+
+attribute vec3 position;
+attribute vec2 texCoord;
+attribute vec3 normal;
+
+varying vec3 normal0;
+varying vec3 finalPos;
+
+uniform mat4 viewAndProjection;
+uniform mat4 model;
+uniform mat3 normalMatrix;
+
+void main()
+{
+	gl_Position = viewAndProjection * model * vec4(position, 1.0);
+	normal0  = normalMatrix * normal;
+	finalPos = position;
+}
